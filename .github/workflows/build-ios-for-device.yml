@@ -64,8 +64,30 @@ jobs:
           cd ..
           echo "IPA created successfully"
 
+      - name: Verify IPA was created
+        run: |
+          ls -la iosApp/*.zip 2>/dev/null || echo "IPA not found"
+          ls -la iosApp/output/ 2>/dev/null || echo "Output dir not found"
+
       - name: Upload iOS Device Build
         uses: actions/upload-artifact@v4
         with:
           name: ios-app-device
           path: iosApp/iosApp-device.zip
+          retention-days: 90
+
+      - name: Print download link
+        run: |
+          echo "======================================"
+          echo "🎉 BUILD SUCCESSFUL!"
+          echo "======================================"
+          echo ""
+          echo "📥 Download IPA from:"
+          echo "https://github.com/byj187/anxincaiguan/actions/runs/${{ github.run_id }}/artifacts"
+          echo ""
+          echo "📱 Install using AltStore:"
+          echo "1. Download the ios-app-device.zip artifact"
+          echo "2. Unzip it to get iosApp-device.ipa"
+          echo "3. Open with AltStore on your iPhone"
+          echo ""
+          echo "======================================"
