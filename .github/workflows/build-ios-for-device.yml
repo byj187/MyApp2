@@ -35,7 +35,7 @@ jobs:
 
       - name: List build output
         run: |
-          ls -la composeApp/build/bin/iosArm64/debugFramework/
+          find composeApp/build -name "*.framework" -type d 2>/dev/null || find composeApp/build -type d -name "framework" 2>/dev/null || ls -la composeApp/build/bin/ 2>/dev/null || echo "Build output not found"
 
       - name: Build iOS App for Device
         run: |
