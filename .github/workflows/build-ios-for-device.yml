@@ -24,10 +24,14 @@ jobs:
         with:
           gradle-version: 8.11.1
 
-      - name: Build iOS Framework for Device (ARM64)
+      - name: List all available Gradle tasks
         run: |
           chmod +x ./gradlew
-          ./gradlew :composeApp:compileKotlinIosArm64 :composeApp:linkDebugFrameworkIosArm64 --no-daemon
+          ./gradlew tasks --all 2>&1 | grep -E "(ios|arm|framework)" | head -50
+
+      - name: Build iOS Framework for Device (ARM64)
+        run: |
+          ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon
 
       - name: List build output
         run: |
