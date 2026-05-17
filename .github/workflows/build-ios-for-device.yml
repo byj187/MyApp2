@@ -38,43 +38,63 @@ jobs:
           find composeApp/build -name "*.framework" -type d 2>/dev/null || find composeApp/build -type d -name "framework" 2>/dev/null || ls -la composeApp/build/bin/ 2>/dev/null || echo "Build output not found"
 
       - name: Build iOS App for Device
-        run: |
-          cd iosApp
-          xcodebuild -project iosApp.xcodeproj \
-            -scheme iosApp \
-            -configuration Debug \
-            -destination 'generic/platform=iOS' \
-            -derivedDataPath ./build \
-            build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+    run: |
+      cd iosapp
+      xcodebuild -project iosApp.xcodeproj \
+        -scheme iosApp \
+        -configuration Debug \
+        -destination 'generic/platform=iOS' \
+        -derivedDataPath ./build \
+        build \
+        CODE_SIGN_IDENTITY="" \
+        CODE_SIGNING_REQUIRED=NO \
+        CODE_SIGNING_ALLOWED=NO
 
-      - name: Create IPA for iOS Device
-        run: |
-          cd iosApp
-          mkdir -p output
-          find build/Build/Products/Debug-iphoneos -name "*.app" -type d -maxdepth 1 > app_path.txt
-          APP_PATH=$(cat app_path.txt)
-          APP_NAME=$(basename "$APP_PATH")
-          cp -r "$APP_PATH" ./output/
-          cd output
-          ln -s "$APP_NAME" Payload
-          zip -r ../iosApp-device.zip Payload
-          cd ..
-          echo "IPA created successfully"
+  - name: Create IPA for iOS Device
+    run: |
+      cd iosapp
+      mkdir -p output
+      
+      # Find the .app file
+      APP_PATH=$(find build/Build/Products/Debug-iphoneos -name "*.app" -type d | head -1)
+      
+      if [ -z "$APP_PATH" ]; then
+        echo "Error: No .app file found!"
+        ls -la build/Build/Products/Debug-iphoneos
+        exit 1
+      fi
+      
+      echo "Found app at: $APP_PATH"
+      
+      # Copy the app to output directory
+      cp -r "$APP_PATH" ./output/
+      
+      cd output
+      
+      # Create Payload directory and copy app
+      mkdir -p Payload
+      APP_NAME=$(basename "$APP_PATH")
+      mv "$APP_NAME" Payload/
+      
+      # Create IPA
+      zip -r ../iosApp-device.zip Payload
+      
+      cd ..
+      
+      echo "IPA created successfully"
+      ls -la iosApp-device.zip
 
       - name: Verify IPA was created
-        run: |
-          ls -la iosApp/*.zip 2>/dev/null || echo "IPA not found"
-          ls -la iosApp/output/ 2>/dev/null || echo "Output dir not found"
+    run: |
+      ls -la iosapp/*.zip 2>/dev/null || echo "IPA not found"
+      ls -la iosapp/output/ 2>/dev/null || echo "Output dir not found"
 
-      - name: Upload iOS Device Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-app-device
-          path: iosApp/iosApp-device.zip
-          retention-days: 90
+  - name: Upload iOS Device Build
+    uses: actions/upload-artifact@v4
+    with:
+      name: ios-app-device
+      path: iosapp/iosApp-device.zip
+      retention-days: 90
 
       - name: Print download link
         run: |
