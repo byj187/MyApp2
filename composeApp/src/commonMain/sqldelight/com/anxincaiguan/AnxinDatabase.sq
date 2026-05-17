@@ -1,0 +1,238 @@
+CREATE TABLE main_account (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    balance REAL NOT NULL DEFAULT 0.0,
+    target_ratio_for_salary REAL NOT NULL DEFAULT 0.0
+);
+
+CREATE TABLE growth_sub_account (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    idle_amount REAL NOT NULL DEFAULT 0.0,
+    invested_amount REAL NOT NULL DEFAULT 0.0,
+    target_ratio REAL NOT NULL DEFAULT 0.0
+);
+
+CREATE TABLE bill (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_type TEXT NOT NULL,
+    account_id INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    amount REAL NOT NULL,
+    category TEXT NOT NULL,
+    date TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE transfer (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_type TEXT NOT NULL,
+    from_id INTEGER NOT NULL,
+    to_type TEXT NOT NULL,
+    to_id INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    date TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE salary_record (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    total REAL NOT NULL,
+    date TEXT NOT NULL,
+    daily_fixed REAL NOT NULL,
+    remaining REAL NOT NULL,
+    allocation_json TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE investment_product (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sub_account_id INTEGER NOT NULL,
+    product_name TEXT NOT NULL,
+    amount REAL NOT NULL,
+    rate REAL NOT NULL DEFAULT 0.0,
+    purchase_date TEXT NOT NULL,
+    expire_date TEXT,
+    note TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'ACTIVE'
+);
+
+CREATE TABLE investment_income (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    income_type TEXT NOT NULL,
+    date TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE stable_product (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id INTEGER NOT NULL,
+    product_name TEXT NOT NULL,
+    product_type TEXT NOT NULL,
+    amount REAL NOT NULL DEFAULT 0.0,
+    annual_rate REAL NOT NULL DEFAULT 0.0,
+    purchase_date TEXT NOT NULL,
+    expire_date TEXT,
+    note TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'ACTIVE'
+);
+
+CREATE TABLE stable_income (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    date TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE settings (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    main_ratios_for_salary TEXT NOT NULL DEFAULT '{}',
+    growth_ratios TEXT NOT NULL DEFAULT '{}',
+    deviation_threshold REAL NOT NULL DEFAULT 0.05,
+    daily_fixed_amount REAL NOT NULL DEFAULT 0.0,
+    stock_asset_ratios TEXT NOT NULL DEFAULT '{}'
+);
+
+-- Main Account queries
+selectAllMainAccounts:
+SELECT * FROM main_account;
+
+selectMainAccountById:
+SELECT * FROM main_account WHERE id = ?;
+
+insertMainAccount:
+INSERT INTO main_account (name, balance, target_ratio_for_salary) VALUES (?, ?, ?);
+
+updateMainAccountBalance:
+UPDATE main_account SET balance = balance + ? WHERE id = ?;
+
+updateMainAccountRatio:
+UPDATE main_account SET target_ratio_for_salary = ? WHERE id = ?;
+
+deleteAllMainAccounts:
+DELETE FROM main_account;
+
+-- Growth Sub Account queries
+selectAllGrowthSubAccounts:
+SELECT * FROM growth_sub_account;
+
+selectGrowthSubAccountById:
+SELECT * FROM growth_sub_account WHERE id = ?;
+
+insertGrowthSubAccount:
+INSERT INTO growth_sub_account (name, idle_amount, invested_amount, target_ratio) VALUES (?, ?, ?, ?);
+
+updateGrowthSubAccountIdle:
+UPDATE growth_sub_account SET idle_amount = idle_amount + ? WHERE id = ?;
+
+updateGrowthSubAccountInvested:
+UPDATE growth_sub_account SET invested_amount = invested_amount + ? WHERE id = ?;
+
+deleteAllGrowthSubAccounts:
+DELETE FROM growth_sub_account;
+
+-- Bill queries
+selectAllBills:
+SELECT * FROM bill ORDER BY date DESC;
+
+selectBillsByAccount:
+SELECT * FROM bill WHERE account_type = ? AND account_id = ? ORDER BY date DESC;
+
+insertBill:
+INSERT INTO bill (account_type, account_id, type, amount, category, date, note) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteBill:
+DELETE FROM bill WHERE id = ?;
+
+deleteAllBills:
+DELETE FROM bill;
+
+-- Transfer queries
+selectAllTransfers:
+SELECT * FROM transfer ORDER BY date DESC;
+
+insertTransfer:
+INSERT INTO transfer (from_type, from_id, to_type, to_id, amount, date, note) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteAllTransfers:
+DELETE FROM transfer;
+
+-- Salary Record queries
+selectAllSalaryRecords:
+SELECT * FROM salary_record ORDER BY date DESC;
+
+insertSalaryRecord:
+INSERT INTO salary_record (total, date, daily_fixed, remaining, allocation_json) VALUES (?, ?, ?, ?, ?);
+
+deleteAllSalaryRecords:
+DELETE FROM salary_record;
+
+-- Investment Product queries
+selectProductsBySubAccount:
+SELECT * FROM investment_product WHERE sub_account_id = ?;
+
+insertInvestmentProduct:
+INSERT INTO investment_product (sub_account_id, product_name, amount, rate, purchase_date, expire_date, note, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateProductAmount:
+UPDATE investment_product SET amount = ? WHERE id = ?;
+
+updateProductStatus:
+UPDATE investment_product SET status = ? WHERE id = ?;
+
+deleteAllInvestmentProducts:
+DELETE FROM investment_product;
+
+-- Investment Income queries
+selectAllInvestmentIncomes:
+SELECT * FROM investment_income ORDER BY date DESC;
+
+selectIncomesByProduct:
+SELECT * FROM investment_income WHERE product_id = ? ORDER BY date DESC;
+
+insertInvestmentIncome:
+INSERT INTO investment_income (product_id, amount, income_type, date, note) VALUES (?, ?, ?, ?, ?);
+
+deleteAllInvestmentIncomes:
+DELETE FROM investment_income;
+
+-- Stable Product queries
+selectStableProductsByAccount:
+SELECT * FROM stable_product WHERE account_id = ?;
+
+selectStableProductById:
+SELECT * FROM stable_product WHERE id = ?;
+
+insertStableProduct:
+INSERT INTO stable_product (account_id, product_name, product_type, amount, annual_rate, purchase_date, expire_date, note, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateStableProductAmount:
+UPDATE stable_product SET amount = ? WHERE id = ?;
+
+updateStableProductStatus:
+UPDATE stable_product SET status = ? WHERE id = ?;
+
+deleteAllStableProducts:
+DELETE FROM stable_product;
+
+-- Stable Income queries
+selectAllStableIncomes:
+SELECT * FROM stable_income ORDER BY date DESC;
+
+selectStableIncomesByProduct:
+SELECT * FROM stable_income WHERE product_id = ? ORDER BY date DESC;
+
+insertStableIncome:
+INSERT INTO stable_income (product_id, amount, date, note) VALUES (?, ?, ?, ?);
+
+deleteAllStableIncomes:
+DELETE FROM stable_income;
+
+-- Settings queries
+selectSettings:
+SELECT * FROM settings WHERE id = 1;
+
+insertOrReplaceSettings:
+INSERT OR REPLACE INTO settings (id, main_ratios_for_salary, growth_ratios, deviation_threshold, daily_fixed_amount, stock_asset_ratios) VALUES (1, ?, ?, ?, ?, ?);

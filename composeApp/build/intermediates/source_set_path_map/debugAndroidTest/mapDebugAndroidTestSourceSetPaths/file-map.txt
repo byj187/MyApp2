@@ -1,0 +1,4 @@
+com.anxincaiguan.test.composeApp-androidTest-0 D:\Users\BAI\AppData\MyApp2\composeApp\build\generated\res\resValues\androidTest\debug
+com.anxincaiguan.test.composeApp-mergeDebugAndroidTestResources-1 D:\Users\BAI\AppData\MyApp2\composeApp\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.anxincaiguan.test.composeApp-mergeDebugAndroidTestResources-2 D:\Users\BAI\AppData\MyApp2\composeApp\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.anxincaiguan.test.composeApp-debugAndroidTest-3 D:\Users\BAI\AppData\MyApp2\composeApp\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
