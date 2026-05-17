@@ -31,7 +31,7 @@ jobs:
 
       - name: Build iOS Framework for Device (ARM64)
         run: |
-          ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon
+          ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon --stacktrace 2>&1 | tail -100
 
       - name: List build output
         run: |
