@@ -24,6 +24,10 @@ import androidx.compose.ui.unit.sp
 import com.anxincaiguan.data.local.Repository
 import com.anxincaiguan.data.model.*
 import com.anxincaiguan.ui.theme.*
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toLocalDate
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -877,19 +881,17 @@ private fun DatePickerField(
 
 private fun parseDateToMillis(date: String): Long? {
     return try {
-        val parts = date.split("-")
-        val cal = java.util.Calendar.getInstance()
-        cal.set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt(), 0, 0, 0)
-        cal.set(java.util.Calendar.MILLISECOND, 0)
-        cal.timeInMillis
+        val localDate = date.toLocalDate()
+        localDate.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
     } catch (_: Exception) { null }
 }
 
 private fun formatMillisToDate(millis: Long): String {
-    val cal = java.util.Calendar.getInstance()
-    cal.timeInMillis = millis
-    val y = cal.get(java.util.Calendar.YEAR)
-    val m = String.format("%02d", cal.get(java.util.Calendar.MONTH) + 1)
-    val d = String.format("%02d", cal.get(java.util.Calendar.DAY_OF_MONTH))
-    return "$y-$m-$d"
+    return try {
+        val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(millis)
+        val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        "${localDate.year}-${localDate.monthNumber.toString().padStart(2, '0')}-${localDate.dayOfMonth.toString().padStart(2, '0')}"
+    } catch (_: Exception) {
+        "1970-01-01"
+    }
 }

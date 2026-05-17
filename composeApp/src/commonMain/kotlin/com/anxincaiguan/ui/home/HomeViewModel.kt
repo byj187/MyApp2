@@ -99,7 +99,7 @@ class HomeViewModel(private val repository: Repository) {
                 }
 
                 val allItems = (bills + transfers + salaries + incomes)
-                    .sortedByDescending { it.date + String.format("%010d", it.id) }
+                    .sortedByDescending { it.date + it.id.toString().padStart(10, '0') }
                     .take(10)
 
                 _uiState.value = HomeUiState(

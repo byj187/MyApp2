@@ -85,7 +85,7 @@ class ReportViewModel(private val repository: Repository) {
                 details.addAll(allIncomes.map {
                     ReportDetailItem(it.id + 30000, "收益", it.amount, it.date, it.note.ifEmpty { "投资收益" }, it.incomeType)
                 })
-                val sortedDetails = details.sortedByDescending { it.date + String.format("%010d", it.id) }
+                val sortedDetails = details.sortedByDescending { it.date + it.id.toString().padStart(10, '0') }
 
                 val monthlyAggs = aggregateMonthly(allBills, startDate, endDate)
 
