@@ -26,6 +26,7 @@ jobs:
 
       - name: Build iOS Framework for Device (ARM64)
         run: |
+          chmod +x ./gradlew
           ./gradlew composeApp:linkDebugFrameworkIosArm64 --no-daemon
 
       - name: List build output
