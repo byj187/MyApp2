@@ -26,8 +26,11 @@ jobs:
 
       - name: Build iOS Framework for Device (ARM64)
         run: |
-          cd composeApp
-          ./gradlew linkDebugFrameworkIosArm64 --no-daemon
+          ./gradlew composeApp:linkDebugFrameworkIosArm64 --no-daemon
+
+      - name: List build output
+        run: |
+          ls -la composeApp/build/bin/iosArm64/debugFramework/
 
       - name: Build iOS App for Device
         run: |
@@ -46,23 +49,14 @@ jobs:
         run: |
           cd iosApp
           mkdir -p output
-
-          # Find the built .app
           find build/Build/Products/Debug-iphoneos -name "*.app" -type d -maxdepth 1 > app_path.txt
           APP_PATH=$(cat app_path.txt)
           APP_NAME=$(basename "$APP_PATH")
-
-          # Copy the app to output
           cp -r "$APP_PATH" ./output/
-
-          # Create symbolic link for Payload
           cd output
           ln -s "$APP_NAME" Payload
-
-          # Create IPA
           zip -r ../iosApp-device.zip Payload
           cd ..
-
           echo "IPA created successfully"
 
       - name: Upload iOS Device Build
@@ -70,57 +64,3 @@ jobs:
         with:
           name: ios-app-device
           path: iosApp/iosApp-device.zip
-
-  build-ios-simulator:
-    runs-on: macos-14
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 8.11.1
-
-      - name: Build iOS Framework for Simulator
-        run: |
-          cd composeApp
-          ./gradlew linkDebugFrameworkIosSimulatorArm64 --no-daemon
-
-      - name: Build iOS App for Simulator
-        run: |
-          cd iosApp
-          xcodebuild -project iosApp.xcodeproj \
-            -scheme iosApp \
-            -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 15' \
-            -derivedDataPath ./build \
-            build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Create ZIP for Simulator
-        run: |
-          cd iosApp
-          mkdir -p output
-          find build/Build/Products/Debug-iphonesimulator -name "*.app" -type d -maxdepth 1 > app_path.txt
-          APP_PATH=$(cat app_path.txt)
-          cp -r "$APP_PATH" ./output/
-          cd output
-          zip -r ../iosApp-simulator.zip *
-          cd ..
-          echo "Simulator build created successfully"
-
-      - name: Upload iOS Simulator Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-app-simulator
-          path: iosApp/iosApp-simulator.zip
