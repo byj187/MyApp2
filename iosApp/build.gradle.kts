@@ -1,6 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 kotlin {
@@ -21,8 +22,4 @@ kotlin {
             dependsOn(iosMain)
         }
     }
-}
-
-compose {
-    kotlinCompilerPlugin.set(dependencies.composeCompiler.get().toString())
 }
