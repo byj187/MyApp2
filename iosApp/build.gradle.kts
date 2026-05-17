@@ -1,19 +1,2 @@
-plugins {
-    id("org.jetbrains.kotlin.multiplatform")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
-}
-
-kotlin {
-    iosArm64()
-    iosX64()
-    iosSimulatorArm64()
-
-    sourceSets {
-        val iosMain by getting {
-            dependencies {
-                implementation(project(":composeApp"))
-            }
-        }
-    }
-}
+// iosApp 模块现在由 Xcode 直接构建
+// 此文件保留用于 Gradle 项目结构兼容性
