@@ -259,6 +259,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/Frameworks",
 					"$(SRCROOT)/../composeApp/build/bin/iosArm64/debug",
 					"$(SRCROOT)/../composeApp/build/bin/iosArm64/debugFramework",
 				);
@@ -299,6 +300,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/Frameworks",
 					"$(SRCROOT)/../composeApp/build/bin/iosArm64/debug",
 					"$(SRCROOT)/../composeApp/build/bin/iosArm64/debugFramework",
 				);

@@ -33,6 +33,19 @@ jobs:
         run: |
           find composeApp/build -name "*.framework" -type d 2>/dev/null | head -10
 
+      - name: Copy ComposeApp Framework to iosApp
+        run: |
+          FRAMEWORK_PATH=$(find composeApp/build -name "ComposeApp.framework" -type d | head -1)
+          echo "Found framework at: $FRAMEWORK_PATH"
+          if [ -d "$FRAMEWORK_PATH" ]; then
+            mkdir -p iosapp/Frameworks
+            cp -r "$FRAMEWORK_PATH" iosapp/Frameworks/
+            ls -la iosapp/Frameworks/
+          else
+            echo "Error: ComposeApp.framework not found!"
+            exit 1
+          fi
+
       - name: Build iOS App for Device
         run: |
           cd iosapp
