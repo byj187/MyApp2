@@ -24,14 +24,20 @@ jobs:
         with:
           gradle-version: 8.11.1
 
+      - name: List available Gradle tasks
+        run: |
+          chmod +x ./gradlew
+          ./gradlew tasks --group "iOS" 2>&1 | head -50
+
       - name: Build iOS Framework for Device (ARM64)
         run: |
           chmod +x ./gradlew
-          ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon --info 2>&1 | tail -300
+          ./gradlew :composeApp:assembleDebug --no-daemon 2>&1 | tail -100
 
       - name: List build output
         run: |
-          find composeApp/build -name "*.framework" -type d 2>/dev/null | head -10
+          find composeApp/build -name "*.framework" -type d 2>/dev/null | head -20
+          ls -la composeApp/build/bin/ 2>/dev/null || echo "Bin dir not found"
 
       - name: Copy ComposeApp Framework to iosApp
         run: |
