@@ -27,7 +27,7 @@ jobs:
       - name: Build iOS Framework for Device (ARM64)
         run: |
           chmod +x ./gradlew
-          ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon
+          ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon --info 2>&1 | tail -300
 
       - name: List build output
         run: |
@@ -50,29 +50,29 @@ jobs:
         run: |
           cd iosapp
           mkdir -p output
-          
+
           APP_PATH=$(find build/Build/Products/Debug-iphoneos -name "*.app" -type d | head -1)
-          
+
           if [ -z "$APP_PATH" ]; then
             echo "Error: No .app file found!"
             ls -la build/Build/Products/Debug-iphoneos 2>/dev/null || echo "Directory not found"
             exit 1
           fi
-          
+
           echo "Found app at: $APP_PATH"
-          
+
           cp -r "$APP_PATH" ./output/
-          
+
           cd output
-          
+
           mkdir -p Payload
           APP_NAME=$(basename "$APP_PATH")
           mv "$APP_NAME" Payload/
-          
+
           zip -r ../iosApp-device.zip Payload
-          
+
           cd ..
-          
+
           echo "IPA created successfully"
           ls -la iosApp-device.zip
 
