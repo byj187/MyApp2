@@ -51,6 +51,18 @@ jobs:
           echo "✅ Framework copied!"
           ls -la iosApp/Frameworks/
 
+      - name: Verify framework
+        run: |
+          echo "=== Checking iosApp directory ==="
+          ls -la iosApp/
+          echo "=== Checking Frameworks directory ==="
+          ls -la iosApp/Frameworks/ 2>/dev/null || echo "Frameworks directory doesn't exist yet"
+          echo "=== Checking ComposeApp.framework contents ==="
+          if [ -d "iosApp/Frameworks/ComposeApp.framework" ]; then
+            ls -la iosApp/Frameworks/ComposeApp.framework/
+            ls -la iosApp/Frameworks/ComposeApp.framework/Headers/ 2>/dev/null
+          fi
+
       - name: Build iOS App with Xcode
         run: |
           cd iosApp
@@ -62,7 +74,8 @@ jobs:
             build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1
 
       - name: Create IPA file
         run: |

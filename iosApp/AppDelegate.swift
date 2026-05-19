@@ -8,10 +8,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        let driverFactory = DatabaseDriverFactory()
-        let viewController = Main_iosKt.MainViewController(driverFactory: driverFactory)
+        window?.rootViewController = Main_iosKt.MainViewController()
         
-        window?.rootViewController = viewController
         window?.makeKeyAndVisible()
         return true
     }
