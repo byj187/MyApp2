@@ -24,24 +24,30 @@ jobs:
         with:
           gradle-version: 8.11.1
 
-      - name: List available Gradle tasks
+      - name: List ALL available Gradle tasks
         run: |
           chmod +x ./gradlew
-          ./gradlew tasks --group "iOS" 2>&1 | head -50
+          ./gradlew tasks --all 2>&1 | grep -i "ios\|framework\|arm" | head -50
 
-      - name: Build iOS Framework for Device (ARM64)
+      - name: Build ALL iOS targets
         run: |
           chmod +x ./gradlew
-          ./gradlew :composeApp:assembleDebug --no-daemon 2>&1 | tail -100
+          ./gradlew :composeApp:build 2>&1 | tail -150
 
-      - name: List build output
+      - name: Find ComposeApp Framework
         run: |
-          find composeApp/build -name "*.framework" -type d 2>/dev/null | head -20
+          echo "=== Searching for ComposeApp.framework ==="
+          find . -name "ComposeApp.framework" -type d 2>/dev/null
+          echo ""
+          echo "=== List composeApp/build directory ==="
+          ls -la composeApp/build/ 2>/dev/null || echo "Build dir not found"
+          echo ""
+          echo "=== List composeApp/build/bin directory ==="
           ls -la composeApp/build/bin/ 2>/dev/null || echo "Bin dir not found"
 
       - name: Copy ComposeApp Framework to iosApp
         run: |
-          FRAMEWORK_PATH=$(find composeApp/build -name "ComposeApp.framework" -type d | head -1)
+          FRAMEWORK_PATH=$(find . -name "ComposeApp.framework" -type d | head -1)
           echo "Found framework at: $FRAMEWORK_PATH"
           if [ -d "$FRAMEWORK_PATH" ]; then
             mkdir -p iosapp/Frameworks
