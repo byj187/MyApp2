@@ -882,16 +882,14 @@ private fun DatePickerField(
 private fun parseDateToMillis(date: String): Long? {
     return try {
         val localDate = date.toLocalDate()
-        val localDateTime = localDate.atTime(0, 0, 0)
-        localDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+        localDate.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
     } catch (_: Exception) { null }
 }
 
 private fun formatMillisToDate(millis: Long): String {
     return try {
         val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(millis)
-        val zonedDateTime = instant.atZone(TimeZone.currentSystemDefault())
-        val localDate = zonedDateTime.date
+        val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
         "${localDate.year}-${localDate.monthNumber.toString().padStart(2, '0')}-${localDate.dayOfMonth.toString().padStart(2, '0')}"
     } catch (_: Exception) {
         "1970-01-01"
