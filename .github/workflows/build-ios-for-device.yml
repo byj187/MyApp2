@@ -24,37 +24,29 @@ jobs:
         with:
           gradle-version: 8.11.1
 
-      - name: List ALL available Gradle tasks
+      - name: Try to build iOS ARM64 framework explicitly
         run: |
           chmod +x ./gradlew
-          ./gradlew tasks --all 2>&1 | grep -i "ios\|framework\|arm" | head -50
-
-      - name: Build ALL iOS targets
-        run: |
-          chmod +x ./gradlew
-          ./gradlew :composeApp:build 2>&1 | tail -150
+          ./gradlew :composeApp:iosArm64MainKlibrary :composeApp:linkDebugFrameworkIosArm64 --no-daemon 2>&1 | tail -200
 
       - name: Find ComposeApp Framework
         run: |
           echo "=== Searching for ComposeApp.framework ==="
-          find . -name "ComposeApp.framework" -type d 2>/dev/null
+          find . -name "*.framework" -type d 2>/dev/null
           echo ""
           echo "=== List composeApp/build directory ==="
           ls -la composeApp/build/ 2>/dev/null || echo "Build dir not found"
-          echo ""
-          echo "=== List composeApp/build/bin directory ==="
-          ls -la composeApp/build/bin/ 2>/dev/null || echo "Bin dir not found"
 
       - name: Copy ComposeApp Framework to iosApp
         run: |
-          FRAMEWORK_PATH=$(find . -name "ComposeApp.framework" -type d | head -1)
+          FRAMEWORK_PATH=$(find . -name "*.framework" -type d | grep -i "compose" | head -1)
           echo "Found framework at: $FRAMEWORK_PATH"
           if [ -d "$FRAMEWORK_PATH" ]; then
             mkdir -p iosapp/Frameworks
-            cp -r "$FRAMEWORK_PATH" iosapp/Frameworks/
+            cp -r "$FRAMEWORK_PATH" iosapp/Frameworks/ComposeApp.framework
             ls -la iosapp/Frameworks/
           else
-            echo "Error: ComposeApp.framework not found!"
+            echo "Error: Framework not found!"
             exit 1
           fi
 
