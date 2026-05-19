@@ -2,10 +2,13 @@ package com.anxincaiguan
 
 import androidx.compose.ui.window.ComposeUIViewController
 import com.anxincaiguan.data.local.DatabaseDriverFactory
+import platform.UIKit.UIViewController
 
-fun MainViewController() =
-    ComposeUIViewController {
-        // Create a simple driver factory for testing
-        val driverFactory = DatabaseDriverFactory()
-        App(driverFactory = driverFactory)
-    }
+@Suppress("unused")
+object IosApp {
+    fun createMainViewController(): UIViewController =
+        ComposeUIViewController {
+            val driverFactory = DatabaseDriverFactory()
+            App(driverFactory = driverFactory)
+        }
+}
